@@ -1,12 +1,12 @@
 # nuclear-autoresearch
 
-Autonomous neural network research for nuclear physics emulation, applied to the BANNANE framework ([arXiv:2502.20363v2](https://arxiv.org/abs/2502.20363v2)).
+Autonomous neural network research for nuclear physics emulation, inspired by the BANNANE framework ([arXiv:2502.20363v2](https://arxiv.org/abs/2502.20363v2)).
 
 An AI agent iteratively modifies a neural network emulator for nuclear structure calculations — binding energies and charge radii of oxygen isotopes — keeping changes that improve accuracy and reverting those that don't. Runs natively on Apple Silicon via [MLX](https://github.com/ml-explore/mlx). Inspired by [Karpathy's autoresearch](https://github.com/karpathy/autoresearch).
 
 ## Results
 
-Starting from a faithful reimplementation of the BANNANE architecture, 24 autonomous experiments identified three architectural improvements that together outperform the published results:
+Derived an emulation of the BANNANE architecture, from the published paper (arXiv:2502.20363v2), specifically the supplemental material describing the architecture and their public training data (8,000 LEC samples + 13 IMSRG CSVs). 24 autonomous experiments identified three architectural improvements that together outperform the published results:
 
 | Metric | Published (Table I) | This work | Change |
 |--------|----|----|---|
