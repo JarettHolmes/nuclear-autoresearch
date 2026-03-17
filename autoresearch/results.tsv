@@ -1,0 +1,6 @@
+commit	combined_score	eb_rmse	rch_rmse	physics_ok	status	description
+93cf67d	2.213192	0.785411	0.014278	True	keep	baseline
+12a3b72	2.190615	0.842571	0.013480	True	keep	increase shared_latent_dim to 128
+11585b7	1.816029	0.671837	0.011442	True	keep	add residual skip connection in shared latent
+91d7054	1.535650	0.526194	0.010095	True	keep	replace LeakyReLU with SiLU (swish) activation
+f8cdc01	1.402930	0.441326	0.009616	True	keep	increase head_hidden_dim to 128
