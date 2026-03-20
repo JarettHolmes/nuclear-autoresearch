@@ -2,18 +2,20 @@
 
 Autonomous neural network research for nuclear physics emulation, inspired by the BANNANE framework ([arXiv:2502.20363v2](https://arxiv.org/abs/2502.20363v2)).
 
-An AI agent iteratively modifies a neural network emulator for nuclear structure calculations — binding energies and charge radii of oxygen isotopes — keeping changes that improve accuracy and reverting those that don't. Runs natively on Apple Silicon via [MLX](https://github.com/ml-explore/mlx). Inspired by [Karpathy's autoresearch](https://github.com/karpathy/autoresearch).
+An AI agent iteratively modifies a neural network emulator for nuclear structure calculations — binding energies and charge radii of oxygen isotopes — keeping changes that reduce test-set error and reverting those that don't. Runs natively on Apple Silicon via [MLX](https://github.com/ml-explore/mlx). Inspired by [Karpathy's autoresearch](https://github.com/karpathy/autoresearch).
 
 ## Results
 
-Derived an emulation of the BANNANE architecture, from the published paper (arXiv:2502.20363v2), specifically the supplemental material describing the architecture and their public training data (8,000 LEC samples + 13 IMSRG CSVs). 24 autonomous experiments identified three architectural improvements that together outperform the published results:
+Derived a deterministic reimplementation of the BANNANE architecture from the published paper (arXiv:2502.20363v2), specifically the supplemental material describing the architecture and their public training data (8,000 LEC samples + 13 IMSRG CSVs). 24 autonomous experiments identified three architectural modifications that reduced test-set RMSE in our setup:
 
-| Metric | Published (Table I) | This work | Change |
-|--------|----|----|---|
-| E_B RMSE (emax=10) | 0.8 MeV | **0.44 MeV** | -45% |
-| R_ch RMSE (emax=10) | 0.01 fm | **0.0096 fm** | -4% |
-| Combined score | ~1.8 | **1.40** | -22% |
-| Physics violations | 0 | 0 | -- |
+| Metric | Published (Table I) | This work |
+|--------|----|----|
+| E_B RMSE (emax=10) | 0.8 MeV | 0.44 MeV |
+| R_ch RMSE (emax=10) | 0.01 fm | 0.0096 fm |
+| Combined score | ~1.8 | 1.40 |
+| Physics violations | 0 | 0 |
+
+**Important:** These numbers are not directly comparable. The published work uses a full Bayesian Neural Network with variational inference; this reimplementation uses deterministic training with MC dropout — a fundamentally different approach. Lower RMSE here does not imply a better model. See [Caveats](#caveats) below.
 
 The three changes that mattered, found in sequence:
 
@@ -22,7 +24,7 @@ The three changes that mattered, found in sequence:
 | Baseline | BANNANE reimplementation on MLX | 2.21 |
 | +Residual connection | Skip connection in shared latent network | 1.82 |
 | +SiLU activation | Replace LeakyReLU with SiLU throughout | 1.54 |
-| +Wider heads | Prediction head hidden dim 64 → 128 | **1.40** |
+| +Wider heads | Prediction head hidden dim 64 → 128 | 1.40 |
 
 19 other experiments (layer norm, deeper networks, Huber loss, gradient clipping, weight decay, larger batches, GELU, etc.) were tried and discarded. Full history in `autoresearch/results.tsv`.
 
@@ -30,7 +32,8 @@ The three changes that mattered, found in sequence:
 
 These results should be interpreted carefully:
 
-- **Evaluation methodology may differ.** The published paper uses a full Bayesian Neural Network with variational inference. This work uses deterministic training with MC dropout — a simpler but different approach. The comparison is on test-set RMSE using the same dataset and splitting strategy, but exact data splits may differ due to random seed differences.
+- **Different methodology — not a direct comparison.** The published BANNANE uses a full Bayesian Neural Network with variational inference. This reimplementation uses deterministic training with MC dropout — a simpler approach that answers a different question. RMSE numbers between the two are not apples-to-apples.
+- **Data splits may differ.** Same dataset and splitting strategy, but exact splits may differ due to random seeds.
 - **No cross-validation.** Results are from a single train/val/test split. Performance could vary with different splits.
 - **Uncertainty calibration not validated.** MC dropout provides uncertainty estimates, but whether they're well-calibrated (e.g., 68% of predictions within 1-sigma) has not been tested.
 - **Not tested on out-of-distribution data.** The model has only been evaluated on held-out samples from the same LEC distribution used for training.
